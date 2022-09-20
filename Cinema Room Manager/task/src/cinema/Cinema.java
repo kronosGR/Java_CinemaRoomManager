@@ -29,6 +29,8 @@ public class Cinema {
     }
 
     public static void printCinema() {
+
+        System.out.println();
         System.out.println("Cinema:");
         System.out.print("  ");
         for (int i = 0; i < seats[0].length; i++) {
@@ -49,6 +51,7 @@ public class Cinema {
             }
             System.out.println();
         }
+        System.out.println();
     }
 
     public static int bookTicket(int row, int col) {
@@ -65,17 +68,37 @@ public class Cinema {
             }
         }
 
-        seats[row-1][col-1] = "B";
+        seats[row - 1][col - 1] = "B";
         return price;
     }
 
-    public static void main(String[] args) {
-        // Write your code here
+    public static void showMenu() {
 
-        askTheaterSize();
+        System.out.println();
+        
+        loop:
+        while (true) {
+            System.out.println("1. Show the seats");
+            System.out.println("2. Buy a ticket");
+            System.out.println("0. Exit");
+            int option = sc.nextInt();
 
-        printCinema();
+            switch (option) {
+                case 1:
+                    printCinema();
+                    break;
+                case 2:
+                    buyTicket();
+                    break;
+                case 0:
+                    break loop;
+            }
+        }
 
+
+    }
+
+    public static void buyTicket(){
         System.out.println();
         System.out.println("Enter a row number:");
         int row = sc.nextInt();
@@ -84,8 +107,13 @@ public class Cinema {
 
         System.out.println("Ticket price: $" + bookTicket(row, col));
         System.out.println();
+    }
 
-        printCinema();
+    public static void main(String[] args) {
+        // Write your code here
+
+        askTheaterSize();
+        showMenu();
 
     }
 }
