@@ -7,7 +7,9 @@ public class Cinema {
     static String[][] seats;
     static int rows;
     static int seatsPerRow;
-    static int income = 0;
+    static int totalSeats;
+
+    static int currentIncome = 0;
     static Scanner sc = new Scanner(System.in);
 
     public static void askTheaterSize() {
@@ -17,6 +19,7 @@ public class Cinema {
         seatsPerRow = sc.nextInt();
 
         seats = new String[rows][seatsPerRow];
+        totalSeats = rows * seatsPerRow;
         putSpace();
     }
 
@@ -68,18 +71,49 @@ public class Cinema {
             }
         }
 
-        seats[row - 1][col - 1] = "B";
-        return price;
+        if (row < 1 || row > seats.length || col < 1 || col > seats[0].length) {
+            return -1;
+        } else if (seats[row - 1][col - 1] == "S") {
+            seats[row - 1][col - 1] = "B";
+            currentIncome += price;
+            return price;
+        }
+        return 0;
+    }
+
+    public static int getTotalBooked() {
+        int totalBooked = 0;
+
+        for (int y = 0; y < seats.length; y++) {
+            for (int x = 0; x < seats.length; x++) {
+                if (seats[y][x].equals("B")) {
+                    totalBooked++;
+                }
+            }
+        }
+        return totalBooked;
+    }
+
+    public static int calcTotalIncome() {
+        if (rows * seatsPerRow <= 60) {
+            return totalSeats * 10;
+        } else {
+            int half = rows / 2;
+            int totalPrice = rows / 2 * seatsPerRow * 10;
+            totalPrice += ((rows / 2) + 1) * seatsPerRow * 8;
+            return totalPrice;
+        }
     }
 
     public static void showMenu() {
 
         System.out.println();
-        
+
         loop:
         while (true) {
             System.out.println("1. Show the seats");
             System.out.println("2. Buy a ticket");
+            System.out.println("3. Statistics");
             System.out.println("0. Exit");
             int option = sc.nextInt();
 
@@ -90,6 +124,9 @@ public class Cinema {
                 case 2:
                     buyTicket();
                     break;
+                case 3:
+                    showStatistics();
+                    break;
                 case 0:
                     break loop;
             }
@@ -98,20 +135,48 @@ public class Cinema {
 
     }
 
-    public static void buyTicket(){
-        System.out.println();
-        System.out.println("Enter a row number:");
-        int row = sc.nextInt();
-        System.out.println("Enter a seat number in that row:");
-        int col = sc.nextInt();
+    public static void showStatistics() {
+        int totalBooked = getTotalBooked();
 
-        System.out.println("Ticket price: $" + bookTicket(row, col));
         System.out.println();
+        System.out.println("Number of purchased tickets: " + totalBooked);
+        if (totalBooked == 0) {
+            System.out.println("Percentage: 0.00%");
+        } else {
+            float per = ((float) totalBooked / (float) totalSeats * 100);
+            String msg = String.format("Percentage: %3.2f%%", per);
+            System.out.println(msg);
+        }
+        System.out.println("Current income: $" + currentIncome);
+        System.out.println("Total income: $" + calcTotalIncome());
+        System.out.println();
+
+    }
+
+    public static void buyTicket() {
+        while (true) {
+            System.out.println();
+            System.out.println("Enter a row number:");
+            int row = sc.nextInt();
+            System.out.println("Enter a seat number in that row:");
+            int col = sc.nextInt();
+
+            int price = bookTicket(row, col);
+            if (price != 0 && price != -1) {
+                System.out.println("Ticket price: $" + price);
+                break;
+            } else if (price == -1) {
+                System.out.println("Wrong input!");
+            } else {
+                System.out.println("That ticket has already been purchased!");
+            }
+
+            System.out.println();
+        }
     }
 
     public static void main(String[] args) {
         // Write your code here
-
         askTheaterSize();
         showMenu();
 
